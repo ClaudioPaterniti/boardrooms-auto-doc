@@ -1,4 +1,4 @@
-# $title
+# $name
 
 ## Overview
 $overview
@@ -8,13 +8,18 @@ $overview
 $source
 
 ## Schema
-$schema
-
-## Relations
-### In
-$in_relations
-### Out
-$out_relations
+| Column Name | Source Column | Type | Format |
+|-------------|---------------|------|--------|
+$columns
 
 ## Measures
 $measures
+
+## Relations
+::: mermaid
+classDiagram
+    class $name{
+      $columns_to
+    }
+    $relations
+:::

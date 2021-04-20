@@ -29,7 +29,7 @@ def create_view_page(view, views_dict, template, path):
     source_block = create_view_sources_block(view, views_dict)
     replace_dict = {
         'overview': '',
-        'title': view.name[1],
+        'name': view.name[1],
         'sources': source_block,
         'code': view.query
     }

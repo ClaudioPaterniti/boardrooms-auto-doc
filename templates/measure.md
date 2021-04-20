@@ -7,4 +7,5 @@ $code
 ```
 
 ### Dependencies
+$deps
 </details>
