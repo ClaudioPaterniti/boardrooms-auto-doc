@@ -1,11 +1,14 @@
 <details>
 <summary>$name</summary>
 
-### Dax
+**Format**: $format
+
+
+**Dax**
 ``` js
 $code
 ```
 
-### Dependencies
+**Dependencies**
 $deps
 </details>

@@ -5,7 +5,7 @@ $overview
 [[_TOC_]]
 
 ## Source Table
-$source
+[$source](../$source.md)
 
 ## Schema
 | Column Name | Source Column | Type | Format |
@@ -16,10 +16,3 @@ $columns
 $measures
 
 ## Relations
-::: mermaid
-classDiagram
-    class $name{
-      $columns_to
-    }
-    $relations
-:::
