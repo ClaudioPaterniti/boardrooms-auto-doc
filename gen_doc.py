@@ -21,28 +21,28 @@ def views_dict(path, ext='.sql'):
                 views[(v.name[0].lower(), v.name[1].lower())] = v
     return views
 
-def tables_dict(path):
+def tables_dict(path, include_hidden = False):
     tables = {}
     dirs = [os.path.join(path, d) for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
     for dir in dirs:
         verb(f'Processing table dir {dir}')
         t = Table(dir)
-        if not t.hidden:
+        if include_hidden or not t.hidden:
             tables[t.name] = t
     return tables
 
 def gen_views(views, in_path, out_path, template):
     for view in sorted(views):
         page = vp.create_view_page(views[view], views, template)
-        with open(os.path.join(out_path, view.name[1]+'.md'), 'w') as fo:
+        with open(os.path.join(out_path, views[view].name[1]+'.md'), 'w') as fo:
             fo.write(page)
 
-def gen_tables(tables, views, out_path, templates):
+def gen_tables(tables, views, out_path, templates, media_path):
     measures = []
     for _, t in tables.items():
         measures.extend([m.name for m in t.measures])
     for table in sorted(tables):
-        page = tp.create_table_page(tables[table], measures, views, templates)
+        page = tp.create_table_page(tables[table], measures, views, templates, media_path)
         with open(os.path.join(out_path, tables[table].name+'.md'), 'w') as fo:
             fo.write(page)
     

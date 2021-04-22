@@ -51,7 +51,9 @@ class Table:
         table_json = self._get_table_json(path)
         self.hidden = table_json.get("isHidden") or table_json.get("isPrivate")
         self.name = table_json['name']
-        self.source = self._proc_source(table_json)
+        part_json, partition = self._check_partitions(path)
+        source_json = part_json if partition else table_json
+        self.source = self._proc_source(source_json, partition)
         annotations = _proc_annotations(table_json)
         self.relations = self._proc_relations(annotations['TabularEditor_Relationships'])
         self.columns = []
@@ -73,10 +75,20 @@ class Table:
         with open(table_json, 'r') as f:
             return json.load(f)
 
+    def _check_partitions(self, path):
+        if os.path.isdir(os.path.join(path, 'partitions')):
+            files = os.listdir(os.path.join(path, 'partitions'))
+            if len(files) > 0:
+                 with open(os.path.join(path, 'partitions', files[0]), 'r') as f:
+                    return json.load(f), True
+        return None, False
 
-    def _proc_source(self, table_json):
+    def _proc_source(self, source_json, partition):
         try:
-            source = _proc_expression(table_json['partitions'][0]['source'].get('expression'))
+            if partition:
+                source = _proc_expression(source_json['source'].get('expression'))
+            else:
+                source = _proc_expression(source_json['partitions'][0]['source'].get('expression'))
         except:
             print(f'Could not extract source for {self.name}')
             source = None
@@ -116,6 +128,7 @@ class Table:
             else:
                 r['toCardinality'] = '1'
             r['crossFilteringBehavior'] = 'crossFilteringBehavior' in r
+            r['isActive'] = 'isActive' not in r
         return relations
 
 
