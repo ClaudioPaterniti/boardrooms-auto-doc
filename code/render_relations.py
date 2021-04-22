@@ -11,13 +11,13 @@ def _column(i, text):
     c = c.replace('$text', text)
     return c
 
-def _add_table(g, name, columns):
+def _table(g, name, columns):
     content = []
     content.append(_column(0, f'<b>{html.escape(name)}</b>'))
     for i, c in enumerate(columns):
         content.append(_column(i+1, html.escape(c)))
     table = _table_temp.replace('$content', '\n'.join(content))
-    g.node(name, label=table)
+    return table
 
 def _proc_relations(relations):
     tables = {}
@@ -47,7 +47,8 @@ def render_relations(relations, name, path):
     g.attr('node', shape="plaintext", fontsize="8")
     tables, edges = _proc_relations(relations)
     for t, c in tables.items():
-        _add_table(g, t, c)
+        label = _table(g, t, c)
+        g.node(t, label=label)
     for e in edges:
         g.edge(**e)
     g = g.unflatten(stagger=2)
