@@ -1,3 +1,4 @@
+import os
 import re
 
 from table import Table
@@ -8,6 +9,7 @@ try:
     _render_relations = True
 except ImportError as e:
     print('Install Graphviz for visual rendering of relations:\n\t',e)
+
 
 def _columns_block(table, template):
     blocks = []
@@ -44,8 +46,10 @@ def _relations_block(table, template, media_path):
         return ''
     if _render_relations:
         try:
-            img = render.render_relations(table.relations, table.name, media_path)
-            return f'![Image Error]({img})'
+            img, n = render.render_relations(table.relations, table.name, media_path)
+            link = os.path.join('/docs','.media', 'model',img)
+            size = min(900, 100*n)
+            return f'![Image Error]({link} ={size}x)'
         except Exception as e:
             print(f'Could not render relations for {table.name}:\n\t{e}')
     blocks = []
@@ -53,7 +57,10 @@ def _relations_block(table, template, media_path):
         blocks.append(template.substitute(r))
     return '\n'.join(blocks)
 
-def create_table_page(table, measures_list, views, templates, media_path):
+
+def create_table_page(table, measures_list, views, templates, media_path, visual_relations = True):
+    global _render_relations
+    _render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
     measures = _measures_block(table, measures_list, templates['measure'])
     columns_from =  [r['fromColumn'] for r in table.relations]
