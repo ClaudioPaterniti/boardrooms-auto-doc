@@ -4,10 +4,10 @@ import argparse
 import json
 import re
 
-from view import View
-import views_page as vp
-from table import Table
-import table_page as tp
+from code.view import View
+import code.view_page as vp
+from code.table import Table
+import code.table_page as tp
 
 
 def views_dict(path, ext='.sql'):

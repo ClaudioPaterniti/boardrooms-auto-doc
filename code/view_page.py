@@ -1,4 +1,4 @@
-from view import View
+from code.view import View
 
 
 def _sources_block(view, views_dict):

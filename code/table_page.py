@@ -1,11 +1,11 @@
 import os
 import re
 
-from table import Table
+from code.table import Table
 
 _render_relations = False
 try:
-    import render_relations as render
+    import code.render_relations as render
     _render_relations = True
 except ImportError as e:
     print('Install Graphviz for visual rendering of relations:\n\t',e)
