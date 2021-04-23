@@ -12,6 +12,9 @@ $overview
 |-------------|---------------|------|--------|
 $columns
 
+## Calculated Columns
+$calculated
+
 ## Measures
 $measures
 

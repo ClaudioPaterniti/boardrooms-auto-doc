@@ -28,7 +28,7 @@ def _proc_relations(relations):
         if r['toTable'] not in tables:
             tables[r['toTable']] = []
         tables[r['toTable']].append(r['toColumn'])
-    tables = {k: list(set(i)) for k,i in tables.items()}
+    tables = {k: sorted(set(i)) for k,i in tables.items()}
     edges = []
     for r in relations:
         from_port = tables[r['toTable']].index(r['toColumn'])+1

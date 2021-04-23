@@ -23,9 +23,9 @@ def _columns_block(table, template):
         blocks.append(template.substitute(rd))
     return '\n'.join(blocks)
 
-def _measures_block(table, measures, template):
+def _measures_block(items, measures, template):
     blocks = []
-    for m in table.measures:
+    for m in items:
         if not m.dax:
             continue
         deps = re.findall(r'\[(.+?)\]', m.dax)
@@ -41,13 +41,13 @@ def _measures_block(table, measures, template):
     return '\n'.join(blocks)
 
 
-def _relations_block(table, template, media_path):
+def _relations_block(table, template, media_path, render_relations):
     if len(table.relations) == 0:
         return ''
-    if _render_relations:
+    if render_relations:
         try:
             img, n = render.render_relations(table.relations, table.name, media_path)
-            link = os.path.join('/docs','.media', 'model',img)
+            link = f'/docs/.media/model/{img}'
             size = min(900, 100*n)
             return f'![Image Error]({link} ={size}x)'
         except Exception as e:
@@ -60,12 +60,12 @@ def _relations_block(table, template, media_path):
 
 def create_table_page(table, measures_list, views, templates, media_path, visual_relations = True):
     global _render_relations
-    _render_relations = _render_relations and visual_relations
+    render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
-    measures = _measures_block(table, measures_list, templates['measure'])
-    columns_from =  [r['fromColumn'] for r in table.relations]
-    columns_from = '\n'.join(columns_from)
-    relations = _relations_block(table, templates['relation'], media_path)
+    measures = _measures_block(table.measures, measures_list, templates['measure'])
+    cols = {c.name for c in table.columns}
+    calculated = _measures_block(table.calc_cols, cols, templates['measure'])
+    relations = _relations_block(table, templates['relation'], media_path, render_relations)
     source = table.source
     if table.source != 'Manual':
         try:
@@ -78,8 +78,8 @@ def create_table_page(table, measures_list, views, templates, media_path, visual
         'overview': '',
         'source': source,
         'columns': columns,
+        'calculated': calculated,
         'measures': measures,
-        'columns_from': columns_from,
         'relations': relations
     }
     return templates['table'].substitute(replace_dict)
