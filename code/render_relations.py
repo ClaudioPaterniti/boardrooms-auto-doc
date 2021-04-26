@@ -11,7 +11,7 @@ def _column(i, text):
     c = c.replace('$text', text)
     return c
 
-def _table(g, name, columns):
+def _table(name, columns):
     content = []
     content.append(_column(0, f'<b>{html.escape(name)}</b>'))
     for i, c in enumerate(columns):
@@ -47,7 +47,7 @@ def render_relations(relations, name, path):
     g.attr('node', shape="plaintext", fontsize="8")
     tables, edges = _proc_relations(relations)
     for t, c in tables.items():
-        label = _table(g, t, c)
+        label = _table(t, c)
         g.node(t, label=label)
     for e in edges:
         g.edge(**e)

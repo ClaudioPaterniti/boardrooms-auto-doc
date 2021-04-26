@@ -30,7 +30,7 @@ def _measures_block(items, measures, template):
             continue
         deps = re.findall(r'\[(.+?)\]', m.dax)
         deps = {d for d in deps if d in measures}
-        deps = ', '.join(deps)
+        deps = ', '.join(sorted(deps))
         rd = {
             'name': m.name,
             'format': m.format,
@@ -54,6 +54,7 @@ def _relations_block(table, template, media_path, render_relations):
             print(f'Could not render relations for {table.name}:\n\t{e}')
     blocks = []
     for r in table.relations:
+        r['link'] = re.sub(r'\W', '', r['toTable'])
         blocks.append(template.substitute(r))
     return '\n'.join(blocks)
 
@@ -75,7 +76,6 @@ def create_table_page(table, measures_list, views, templates, media_path, visual
             source = table.source[1]
     replace_dict = {
         'name': table.name,
-        'overview': '',
         'source': source,
         'columns': columns,
         'calculated': calculated,

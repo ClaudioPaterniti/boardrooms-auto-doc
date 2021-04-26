@@ -1,9 +1,10 @@
 import re
-
+from collections import namedtuple
 class View:
 
     _name_pat = re.compile(r'view\s+(?P<source>(?:\w+dltdb)|(?:default))\.(?P<name>\w+)\s', re.IGNORECASE)
     _source_pat = re.compile(r'\s(\w+dltdb|default)\.(\w+)\s')
+    tb_name = namedtuple('tb_name', ['schema', 'table'])
 
     def __init__(self, query, filename):
         self.filename = filename
@@ -16,7 +17,7 @@ class View:
         if name is None:
             print(f'Could not extract view name and source for {self.filename}')
             return ('Unknown', self.filename)
-        return (name['source'], name['name'])
+        return self.tb_name(name['source'], name['name'])
 
     def _parse_sources(self):
         items = self._source_pat.findall(self.query)

@@ -1,7 +1,5 @@
 # $name
 
-## Overview
-$overview
 [[_TOC_]]
 
 ## Source Table

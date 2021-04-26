@@ -1,1 +1,1 @@
-- ['$toTable'](./$toTable.md)\[$toColumn\] -> $fromColumn
+- ['$toTable'](./$link.md)\[$toColumn\] -> $fromColumn

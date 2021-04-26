@@ -8,7 +8,7 @@ def _sources_block(view, views_dict):
         for name in sorted(view.sources[source]):
             key = (source.lower(), name.lower())
             if  key in views_dict:
-                name = views_dict[key].name[1]
+                name = views_dict[key].name.table
                 block += f'- [{name}](./{name}.md)\n'
             else:
                  block += f'- {name}\n'
@@ -17,8 +17,7 @@ def _sources_block(view, views_dict):
 def create_view_page(view, views_dict, template):
     source_block = _sources_block(view, views_dict)
     replace_dict = {
-        'overview': '',
-        'name': view.name[1],
+        'name': view.name.table,
         'sources': source_block,
         'code': view.query
     }
