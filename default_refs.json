@@ -1,6 +1,6 @@
 {
-    "notebooks_path": "/mnt/c/Users/ABS01/source/repos/Logistics Costs Advanced Analytics/databricks/notebooks/lcbaengine/lcba.databricks.views",
-    "model_path": "/mnt/c/Users/ABS01/source/repos/Logistics Costs Advanced Analytics/powerbi/template/tables",
-    "wiki_path": "/mnt/c/Users/ABS01/source/repos/Logistics Costs Advanced Analytics Documentation/docs/Wiki",
-    "wiki_media": "/mnt/c/Users/ABS01/source/repos/Logistics Costs Advanced Analytics Documentation/docs/.media"
+    "notebooks_path": "path_to_repo/databricks/notebooks/xxxengine/xxx.xxx.views",
+    "model_path": "path_to_repo/powerbi/TE_template",
+    "wiki_path": "path_to_wiki_repo/docs/Wiki",
+    "wiki_media": "path_to_wiki_repo/docs/.media"
 }
