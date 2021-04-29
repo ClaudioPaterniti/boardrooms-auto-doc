@@ -36,7 +36,7 @@ def get_sections_tree(page):
     for name, content in sections:
         level = name.count('#')
         parents[level-1] = name
-        tree.append(('/'.join(parents[:level]),name+content))
+        tree.append(('/'.join(parents[:level]), name+content))
     return tree
 
 def merge_page(old, new):
@@ -48,7 +48,7 @@ def merge_page(old, new):
             page.append(new_tree[section])
         else:
             page.append(content)
-    return '\n'.join(page)
+    return ''.join(page)
 
 
 def gen_views(views, out_path, template, merge):
@@ -82,11 +82,12 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--refs', type= str, default='./default_refs.json')
     parser.add_argument('--no-visual', action='store_true')
     parser.add_argument('--no-merge', action ='store_true')
     args = parser.parse_args()
 
-    with open('refs.json', 'r') as fp:
+    with open(args.refs, 'r') as fp:
         refs = json.load(fp)
     views = views_dict(refs['notebooks_path'])
     tables = tables_dict(refs['model_path'])
