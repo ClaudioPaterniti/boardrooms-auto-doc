@@ -56,7 +56,7 @@ def gen_views(views, out_path, template, merge):
         page = vp.create_view_page(views[view], views, template)
         filename = views[view].name.table+'.md'
         out_file = os.path.join(out_path, filename)
-        if merge and os.path.exists(out_file):
+        if merge and os.path.isfile(out_file):
             with open(out_file, 'r') as fp:
                 old = fp.read()
             page = merge_page(old, page)
@@ -69,7 +69,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge):
     for _, t in tables.items():
         measures.update({m.name for m in t.measures})
     for table in sorted(tables):
-        page = tp.create_table_page(tables[table], measures, views, templates, media_path, visual)
+        page = tp.create_table_page(tables[table], tables, measures, views, templates, media_path, visual)
         filename = re.sub(r'\W', '', tables[table].name)+'.md'
         out_file = os.path.join(out_path, filename)
         if merge and os.path.exists(out_file):
@@ -87,7 +87,12 @@ if __name__ == '__main__':
     parser.add_argument('--no-merge', action ='store_true')
     args = parser.parse_args()
 
-    with open(args.refs, 'r') as fp:
+    refs = args.refs
+    if not os.path.isfile(refs):
+        if not os.path.isfile(refs+'.json'):
+            raise FileNotFoundError(f'Ref file: {args.refs} not found')
+        refs = refs+'.json'
+    with open(refs, 'r') as fp:
         refs = json.load(fp)
     views = views_dict(refs['notebooks_path'])
     tables = tables_dict(refs['model_path'])
@@ -96,12 +101,12 @@ if __name__ == '__main__':
         with open(os.path.join('templates', template)) as fp:
             templates[template[:-3]] = Template(fp.read())
     out = {
-        'views': os.path.join(refs['wiki_path'], 'views'),
-        'model': os.path.join(refs['wiki_path'], 'model'),
-        'media': os.path.join(refs['wiki_media'], 'model')
+        'views': os.path.join(refs['wiki_path'], 'Wiki', 'views',),
+        'model': os.path.join(refs['wiki_path'], 'Wiki', 'model',),
+        'media': os.path.join(refs['wiki_path'], '.media', 'model',)
     }
     for _, p in out.items():
         if not os.path.isdir(p):
-            os.mkdir(p)
+            os.makedirs(p)
     gen_views(views, out['views'], templates['view'], not args.no_merge)
     gen_tables(tables, views, out['model'] , templates, out['media'], not args.no_visual, not args.no_merge)

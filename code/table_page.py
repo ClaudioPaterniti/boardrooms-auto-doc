@@ -41,32 +41,41 @@ def _measures_block(items, measures, template):
     return '\n'.join(blocks)
 
 
-def _relations_block(table, template, media_path, render_relations):
+def _relations_block(table, tables, template, media_path, render_relations):
     if len(table.relations) == 0:
         return ''
+    relations = table.relations.copy()
+    done = {table.name}; to_do = relations.copy()
+    while to_do:
+        r = to_do.pop()
+        if r['toTable'] not in done:
+            t = tables[r['toTable']]
+            relations.extend(t.relations)
+            to_do.extend(t.relations)
+            done.add(table.name)
     if render_relations:
         try:
-            img, n = render.render_relations(table.relations, table.name, media_path)
+            img, n = render.render_relations(relations, table.name, media_path)
             link = f'/docs/.media/model/{img}'
-            size = min(900, 100*n)
+            size = min(950, 100*n)
             return f'![Image Error]({link} ={size}x)'
         except Exception as e:
             print(f'Could not render relations for {table.name}:\n\t{e}')
     blocks = []
-    for r in table.relations:
+    for r in relations:
         r['link'] = re.sub(r'\W', '', r['toTable'])
         blocks.append(template.substitute(r))
     return '\n'.join(blocks)
 
 
-def create_table_page(table, measures_list, views, templates, media_path, visual_relations = True):
+def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations = True):
     global _render_relations
     render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
     measures = _measures_block(table.measures, measures_list, templates['measure'])
     cols = {c.name for c in table.columns}
     calculated = _measures_block(table.calc_cols, cols, templates['measure'])
-    relations = _relations_block(table, templates['relation'], media_path, render_relations)
+    relations = _relations_block(table, tables, templates['relation'], media_path, render_relations)
     source = table.source
     if table.source != 'Manual':
         try:
