@@ -101,9 +101,9 @@ if __name__ == '__main__':
         with open(os.path.join('templates', template)) as fp:
             templates[template[:-3]] = Template(fp.read())
     out = {
-        'views': os.path.join(refs['wiki_path'], 'Wiki', 'views',),
-        'model': os.path.join(refs['wiki_path'], 'Wiki', 'model',),
-        'media': os.path.join(refs['wiki_path'], '.media', 'model',)
+        'views': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'views',),
+        'model': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'model',),
+        'media': os.path.join(refs['wiki_path'], 'docs', '.media', 'model',)
     }
     for _, p in out.items():
         if not os.path.isdir(p):
