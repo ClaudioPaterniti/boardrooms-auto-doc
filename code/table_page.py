@@ -52,7 +52,7 @@ def _relations_block(table, tables, template, media_path, render_relations):
             t = tables[r['toTable']]
             relations.extend(t.relations)
             to_do.extend(t.relations)
-            done.add(table.name)
+            done.add(r['toTable'])
     if render_relations:
         try:
             img, n = render.render_relations(relations, table.name, media_path)

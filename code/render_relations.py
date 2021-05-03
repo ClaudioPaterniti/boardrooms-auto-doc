@@ -37,13 +37,14 @@ def _proc_relations(relations):
             'tail_name': f'{r["toTable"]}:c{from_port}',
             'head_name': f'{r["fromTable"]}:c{to_port}',
             'style': 'solid' if r['isActive'] else 'dashed',
+            'color': 'black' if r['isActive'] else 'darkgrey',
         })
     return tables, edges
 
 def render_relations(relations, name, path):
     filename = re.sub(r'\W', '', name)
     g = gv.Digraph(name=name, filename=filename, directory=path)
-    g.attr('graph', size="6", pad="0", nodesep="0.5", ranksep="0.4", dpi="1080")
+    g.attr('graph',  pad="0", nodesep="0.5", ranksep="0.4", dpi="1080")
     g.attr('node', shape="plaintext", fontsize="8")
     tables, edges = _proc_relations(relations)
     for t, c in tables.items():
