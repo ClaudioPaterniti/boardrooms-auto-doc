@@ -1,3 +1,5 @@
+The documentation is populated by parsing the views' notebooks and the pbix serialization generated with Tabular Editor.
+
 Copy default_refs.json into a new per-project file like project_name.json and set the corresponding paths.
 Launch like:
 ```
