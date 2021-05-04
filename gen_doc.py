@@ -106,7 +106,7 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', '-v', type=int, default=3,
                         help='verbosity level')
     args = parser.parse_args()
-
+    args.verbose = max(0, min(5, args.verbose))
     logging.basicConfig(format='%(levelname)s: %(message)s', level=50-args.verbose*10)
     refs = args.refs
     if not os.path.isfile(refs):
