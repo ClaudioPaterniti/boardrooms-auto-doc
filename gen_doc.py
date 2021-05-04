@@ -82,7 +82,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--refs', type= str, default='./default_refs.json')
+    parser.add_argument('--refs', '-r', type= str, default='./default_refs.json')
     parser.add_argument('--no-visual', action='store_true')
     parser.add_argument('--no-merge', action ='store_true')
     args = parser.parse_args()

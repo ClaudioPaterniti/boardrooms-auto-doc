@@ -1,7 +1,7 @@
-Copy default_refs.json into a new per-project file like lc.json and set the corresponding paths.
+Copy default_refs.json into a new per-project file like project_name.json and set the corresponding paths.
 Launch like:
 ```
-python gen_doc.py --refs lc
+python gen_doc.py -r project_name
 ```
 
 To allow visual rendering of table relations it is necessary to install Graphviz api:
