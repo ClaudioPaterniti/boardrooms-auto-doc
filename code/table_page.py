@@ -71,7 +71,6 @@ def _relations_block(table, tables, template, media_path, render_relations):
 
 
 def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations = True):
-    global _render_relations
     render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
     measures = _measures_block(table.measures, measures_list, templates['measure'])
@@ -81,10 +80,12 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
     source = table.source
     if table.source != 'Manual':
         try:
-            source = views[(table.source[0].lower(), table.source[1].lower())].name[1]
+            source = views[(table.source.schema.lower(), table.source.table.lower())].name.table
         except KeyError:
             logging.warning(f'Source view {table.source} for table {table.name} not found')
-            source = table.source[1]
+            source = table.source.table
+        source_link = re.sub(r'\W', '', source)
+        source = f'[{source}](../views/{source_link}.md)'
     replace_dict = {
         'name': table.name,
         'source': source,

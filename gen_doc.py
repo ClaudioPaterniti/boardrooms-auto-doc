@@ -62,7 +62,7 @@ def merge_page(old, new):
 
 def gen_views(views, out_path, template, merge):
     for view in sorted(views):
-        filename = views[view].name.table+'.md'
+        filename = re.sub(r'\W', '', views[view].name.table)+'.md'
         logging.info(f'Generating view page {filename}')
         page = vp.create_view_page(views[view], views, template)
         out_file = os.path.join(out_path, filename)

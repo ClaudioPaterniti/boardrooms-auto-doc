@@ -4,6 +4,8 @@ import json
 import logging
 from enum import Enum
 
+from code.view import Tb_name
+
 
 def _proc_expression(exp):
     if isinstance(exp, list):
@@ -95,7 +97,7 @@ class Table:
         if source is not None:
             source = self._source_pat.search(source)
         if source is not None:
-            return (source['schema'], source['name'])
+            return Tb_name(source['schema'], source['name'])
         else:
             return 'Manual'
 

@@ -3,7 +3,7 @@
 [[_TOC_]]
 
 ## Source Table
-[$source](../views/$source.md)
+$source
 
 ## Schema
 | Column Name | Source Column | Type | Format |
