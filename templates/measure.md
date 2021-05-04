@@ -4,11 +4,10 @@
 **Format**: $format
 
 
-**Dax**
+**Dax**:
 ``` js
 $code
 ```
 
-**Dependencies**
-$deps
+**Dependencies**: $deps
 </details>
