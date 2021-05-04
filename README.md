@@ -1,10 +1,15 @@
 The documentation is populated by parsing the views' notebooks and the pbix serialization generated with Tabular Editor.
 
-Copy default_refs.json into a new per-project file like project_name.json and set the corresponding paths.
-Launch like:
+Copy default_refs.json into a new per-project file, for example project_name.json, and set the corresponding paths.
+Launch with:
 ```
 python gen_doc.py -r project_name
 ```
+For command line options run:
+```
+python gen_doc.py -h
+```
+
 
 To allow visual rendering of table relations it is necessary to install Graphviz api:
 ```
