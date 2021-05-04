@@ -1,7 +1,7 @@
 import os
 import re
 import json
-import ast
+import logging
 from enum import Enum
 
 
@@ -38,7 +38,7 @@ class Table_item:
             try:
                 self.format = self._format_pat.search(self.format)['format']
             except TypeError:
-                print(f'Could not extract format from {self.table} - {self.name}')
+                logging.warning(f'Could not extract format for {self.table} - {self.name}')
                 self.format = ''
         self.source = item.get("sourceColumn")
 
@@ -90,7 +90,7 @@ class Table:
             else:
                 source = _proc_expression(source_json['partitions'][0]['source'].get('expression'))
         except:
-            print(f'Could not extract source for {self.name}')
+            logging.warning(f'Could not extract source for {self.name}')
             source = None
         if source is not None:
             source = self._source_pat.search(source)

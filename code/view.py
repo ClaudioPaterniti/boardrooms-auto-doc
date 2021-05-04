@@ -1,5 +1,8 @@
 import re
+import logging
 from collections import namedtuple
+
+
 class View:
 
     _name_pat = re.compile(r'view\s+(?P<source>(?:\w+dltdb)|(?:default))\.(?P<name>\w+)\s', re.IGNORECASE)
@@ -15,7 +18,7 @@ class View:
     def _parse_name(self):
         name = self._name_pat.search(self.query)
         if name is None:
-            print(f'Could not extract view name and source for {self.filename}')
+            logging.error(f'Could not extract view name and source for {self.filename}')
             return ('Unknown', self.filename)
         return self.tb_name(name['source'], name['name'])
 

@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 
 from code.table import Table
 
@@ -8,7 +9,7 @@ try:
     import code.render_relations as render
     _render_relations = True
 except ImportError as e:
-    print('Install Graphviz for visual rendering of relations:\n\t',e)
+    logging.warning(f'Install Graphviz for visual rendering of relations:\n{e}')
 
 
 def _columns_block(table, template):
@@ -55,12 +56,13 @@ def _relations_block(table, tables, template, media_path, render_relations):
             done.add(r['toTable'])
     if render_relations:
         try:
+            logging.info(f'Rendering relations')
             img, n = render.render_relations(relations, table.name, media_path)
             link = f'/docs/.media/model/{img}'
             size = min(950, 100*n)
             return f'![Image Error]({link} ={size}x)'
         except Exception as e:
-            print(f'Could not render relations for {table.name}:\n\t{e}')
+            logging.error(f'Could not render relations:\n{e}')
     blocks = []
     for r in relations:
         r['link'] = re.sub(r'\W', '', r['toTable'])
@@ -81,7 +83,7 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
         try:
             source = views[(table.source[0].lower(), table.source[1].lower())].name[1]
         except KeyError:
-            print(f'Source view {(table.source[0], table.source[1])} for table {table.name} not found')
+            logging.warning(f'Source view {table.source} for table {table.name} not found')
             source = table.source[1]
     replace_dict = {
         'name': table.name,
