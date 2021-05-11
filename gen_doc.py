@@ -103,9 +103,12 @@ if __name__ == '__main__':
                         help='disable visual rendering of relations')
     parser.add_argument('--no-merge', action ='store_true',
                         help='disable documentation pages merging, it overwrites current pages')
+    parser.add_argument('--no-views', action ='store_true',
+                        help='disable views pages generation')
     parser.add_argument('--verbose', '-v', type=int, default=3,
                         help='verbosity level')
     args = parser.parse_args()
+    
     args.verbose = max(0, min(5, args.verbose))
     logging.basicConfig(format='%(levelname)s: %(message)s', level=50-args.verbose*10)
     refs = args.refs
@@ -115,19 +118,23 @@ if __name__ == '__main__':
         refs = refs+'.json'
     with open(refs, 'r') as fp:
         refs = json.load(fp)
-    views = views_dict(refs['notebooks_path'], args.views_ext)
-    tables = tables_dict(refs['model_path'])
     templates = {}
     for template in os.listdir('./templates'):
         with open(os.path.join('templates', template)) as fp:
             templates[template[:-3]] = Template(fp.read())
     out = {
-        'views': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'views',),
         'model': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'model',),
         'media': os.path.join(refs['wiki_path'], 'docs', '.media', 'model',)
     }
+    if refs['notebooks_path'] and not args.no_views:
+        views = views_dict(refs['notebooks_path'], args.views_ext)
+        out['views'] =  os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'views',)
+    else:
+        views = {}
     for _, p in out.items():
         if not os.path.isdir(p):
             os.makedirs(p)
-    gen_views(views, out['views'], templates['view'], not args.no_merge)
+    tables = tables_dict(refs['model_path'])
+    if views:
+        gen_views(views, out['views'], templates['view'], not args.no_merge)
     gen_tables(tables, views, out['model'] , templates, out['media'], not args.no_visual, not args.no_merge)

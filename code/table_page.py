@@ -9,7 +9,7 @@ try:
     import code.render_relations as render
     _render_relations = True
 except ImportError as e:
-    logging.warning(f'Install Graphviz for visual rendering of relations:\n{e}')
+    logging.warning(f'Install Graphviz for visual rendering of relations:\n{e}\n')
 
 
 def _columns_block(table, template):
@@ -50,9 +50,12 @@ def _relations_block(table, tables, template, media_path, render_relations):
     while to_do:
         r = to_do.pop()
         if r['toTable'] not in done:
-            t = tables[r['toTable']]
-            relations.extend(t.relations)
-            to_do.extend(t.relations)
+            try:
+                t = tables[r['toTable']]
+                relations.extend(t.relations)
+                to_do.extend(t.relations)
+            except KeyError as e:
+                logging.error(f"Table {r['toTable']} related to {table.name} not found")
             done.add(r['toTable'])
     if render_relations:
         try:
@@ -79,13 +82,15 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
     relations = _relations_block(table, tables, templates['relation'], media_path, render_relations)
     source = table.source
     if table.source != 'Manual':
-        try:
-            source = views[(table.source.schema.lower(), table.source.table.lower())].name.table
-        except KeyError:
-            logging.warning(f'Source view {table.source} for table {table.name} not found')
+        key = (table.source.schema.lower(), table.source.table.lower())
+        if key in views:
+            source = views[key].name.table
+            source_link = re.sub(r'\W', '', source)
+            source = f'[{source}](../views/{source_link}.md)'
+        else:
+            if views:
+                logging.warning(f'Source view {table.source} for table {table.name} not found')
             source = table.source.table
-        source_link = re.sub(r'\W', '', source)
-        source = f'[{source}](../views/{source_link}.md)'
     replace_dict = {
         'name': table.name,
         'source': source,
