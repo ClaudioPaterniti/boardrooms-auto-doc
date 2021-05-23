@@ -29,8 +29,7 @@ def _measures_block(tree, measures, template, folder_template):
     for name, folder in tree.folders.items():
         rd = {
             'name': name,
-            'measures': _measures_block(folder, measures, template, folder_template),
-            'level': '>'*tree.level
+            'measures': _measures_block(folder, measures, template, folder_template)
         }
         blocks.append(folder_template.substitute(rd))
     for m in tree.measures:
@@ -43,11 +42,13 @@ def _measures_block(tree, measures, template, folder_template):
             'name': m.name,
             'format': m.format,
             'code': m.dax,
-            'deps': deps,
-            'level': '>'*tree.level
+            'deps': deps
         }
         blocks.append(template.substitute(rd))
-    return '\n'.join(blocks)
+    s = '\n'.join(blocks)
+    if tree.level > 0:
+        s = re.sub(r'^', '>', s, flags=re.MULTILINE)
+    return s
 
 
 def _relations_block(table, tables, template, media_path, render_relations):

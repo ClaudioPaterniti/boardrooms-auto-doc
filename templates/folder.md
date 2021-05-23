@@ -1,5 +1,6 @@
-$level<details>
-$level<summary>Folder: $name</summary>
-$level
+<details>
+<summary>FOLDER: $name</summary>
+
 $measures
-$level</details>
+
+</details>
