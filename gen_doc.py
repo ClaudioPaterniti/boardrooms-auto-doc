@@ -95,7 +95,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--refs', '-r', type= str, default='./default_refs.json',
+    parser.add_argument('--refs', '-r', '--profile', '-p', type= str, default='./default_refs.json',
                         help='path to the references file')
     parser.add_argument('--views_ext', type=str, default = '.sql',
                         help='file extensions to parse in the views folder')

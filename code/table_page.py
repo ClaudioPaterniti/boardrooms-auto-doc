@@ -24,9 +24,16 @@ def _columns_block(table, template):
         blocks.append(template.substitute(rd))
     return '\n'.join(blocks)
 
-def _measures_block(items, measures, template):
+def _measures_block(tree, measures, template, folder_template):
     blocks = []
-    for m in items:
+    for name, folder in tree.folders.items():
+        rd = {
+            'name': name,
+            'measures': _measures_block(folder, measures, template, folder_template),
+            'level': '>'*tree.level
+        }
+        blocks.append(folder_template.substitute(rd))
+    for m in tree.measures:
         if not m.dax:
             continue
         deps = re.findall(r'\[(.+?)\]', m.dax)
@@ -36,7 +43,8 @@ def _measures_block(items, measures, template):
             'name': m.name,
             'format': m.format,
             'code': m.dax,
-            'deps': deps
+            'deps': deps,
+            'level': '>'*tree.level
         }
         blocks.append(template.substitute(rd))
     return '\n'.join(blocks)
@@ -76,9 +84,9 @@ def _relations_block(table, tables, template, media_path, render_relations):
 def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations = True):
     render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
-    measures = _measures_block(table.measures, measures_list, templates['measure'])
+    measures = _measures_block(table.tree, measures_list, templates['measure'], templates['folder'])
     cols = {c.name for c in table.columns}
-    calculated = _measures_block(table.calc_cols, cols, templates['measure'])
+    calculated = _measures_block(table.calc_cols, cols, templates['measure'], templates['folder'])
     relations = _relations_block(table, tables, templates['relation'], media_path, render_relations)
     source = table.source
     if table.source != 'Manual':

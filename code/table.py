@@ -20,6 +20,23 @@ def _proc_annotations(item):
     annotations = {i['name']: i.get('value') for i in item['annotations']}
     return annotations
 
+class Folder:
+    def __init__(self, name, level=0):
+        self.level = level
+        self.name = name
+        self.folders = {}
+        self.measures = []
+
+
+    def add(self, measure, path):
+        if path:
+            if path[0] not in self.folders:
+                self.folders[path[0]] = Folder(path[0], self.level+1)
+            self.folders[path[0]].add(measure, path[1:])
+        else:
+            self.measures.append(measure)
+
+
 class Table_item:
 
     _format_pat = re.compile(r'\sFormat="(?P<format>\w+)"')
@@ -59,10 +76,11 @@ class Table:
         annotations = _proc_annotations(table_json)
         self.relations = self._proc_relations(annotations['TabularEditor_Relationships'])
         self.columns = []
-        self.calc_cols = []
+        self.calc_cols = Folder('columns')
         if os.path.isdir(os.path.join(path,'columns')):
             self._proc_columns(os.path.join(path,'columns'))
         self.measures = []
+        self.tree = Folder('root')
         if os.path.isdir(os.path.join(path,'measures')):
             self._proc_measures(os.path.join(path,'measures'))
 
@@ -107,7 +125,7 @@ class Table:
             with open(os.path.join(path, f), 'r') as fp:
                 c = Table_item(json.load(fp), Table_item.Type.COLUMN, self.name)
                 if c.dax is not None:
-                    self.calc_cols.append(c)
+                    self.calc_cols.add(c, [])
                 else:
                     self.columns.append(c)
 
@@ -115,7 +133,13 @@ class Table:
     def _proc_measures(self, path):
         for f in os.listdir(path):
             with open(os.path.join(path, f), 'r') as fp:
-                self.measures.append(Table_item(json.load(fp), Table_item.Type.MEASURE, self.name))
+                body = json.load(fp)
+                m = Table_item(body, Table_item.Type.MEASURE, self.name)
+                self.measures.append(m)
+                if 'displayFolder' in body:
+                    self.tree.add(m, body['displayFolder'].split('\\'))
+                else:
+                    self.tree.add(m, [])
 
 
     def _proc_relations(self, relations):
