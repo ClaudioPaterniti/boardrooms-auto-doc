@@ -123,12 +123,12 @@ if __name__ == '__main__':
         with open(os.path.join('templates', template)) as fp:
             templates[template[:-3]] = Template(fp.read())
     out = {
-        'model': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'model',),
-        'media': os.path.join(refs['wiki_path'], 'docs', '.media', 'model',)
+        'model': os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'Model',),
+        'media': os.path.join(refs['wiki_path'], 'docs', '.media', 'Model',)
     }
     if refs['notebooks_path'] and not args.no_views:
         views = views_dict(refs['notebooks_path'], args.views_ext)
-        out['views'] =  os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'views',)
+        out['views'] =  os.path.join(refs['wiki_path'], 'docs', 'Wiki', 'Views',)
     else:
         views = {}
     for _, p in out.items():
