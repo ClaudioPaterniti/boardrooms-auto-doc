@@ -95,7 +95,7 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
         if key in views:
             source = views[key].name.table
             source_link = re.sub(r'\W', '', source)
-            source = f'[{source}](../views/{source_link}.md)'
+            source = f'[{source}](../Databricks-Objects/{source_link}.md)'
         else:
             if views:
                 logging.warning(f'Source view {table.source} for table {table.name} not found')
