@@ -8,7 +8,7 @@ from string import Template
 
 from code.view import View
 import code.view_page as vp
-from code.table import Table
+from code.TE_model_parser import Table
 import code.table_page as tp
 
 _section_pat = re.compile(r'(#+.+?$)((?:[^#]|(?:\\#))*)', flags=re.MULTILINE | re.DOTALL)
@@ -75,14 +75,14 @@ def gen_views(views, out_path, template, merge):
             fo.write(page)
 
 
-def gen_tables(tables, views, out_path, templates, media_path, visual, merge):
+def gen_tables(tables, views, out_path, templates, media_path, visual, merge, dpi):
     measures = set()
     for _, t in tables.items():
         measures.update({m.name for m in t.measures})
     for table in sorted(tables):
         filename = re.sub(r'\W', '', tables[table].name)+'.md'
         logging.info(f'Generating table page {filename}')
-        page = tp.create_table_page(tables[table], tables, measures, views, templates, media_path, visual)
+        page = tp.create_table_page(tables[table], tables, measures, views, templates, media_path, visual, dpi)
         out_file = os.path.join(out_path, filename)
         if merge and os.path.exists(out_file):
             logging.info(f'Merging with old {filename}')
@@ -99,8 +99,12 @@ if __name__ == '__main__':
                         help='path to the references file')
     parser.add_argument('--views_ext', type=str, default = '.sql',
                         help='file extensions to parse in the views folder')
+    parser.add_argument('--serializer', '-s', type=str, default='te',
+                        help='indicate what serializer procued the model, options: te or sloth')
     parser.add_argument('--no-visual', action='store_true',
                         help='disable visual rendering of relations')
+    parser.add_argument('-dpi', type= int, default=1080,
+                        help= 'set relation images resolution')
     parser.add_argument('--no-merge', action ='store_true',
                         help='disable documentation pages merging, it overwrites current pages')
     parser.add_argument('--no-views', action ='store_true',
@@ -112,6 +116,8 @@ if __name__ == '__main__':
     args.verbose = max(0, min(5, args.verbose))
     logging.basicConfig(format='%(levelname)s: %(message)s', level=50-args.verbose*10)
     refs = args.refs
+    if args.serializer == 'sloth':
+        from code.sloth_parser import Table
     if not os.path.isfile(refs):
         if not os.path.isfile(refs+'.json'):
             raise FileNotFoundError(f'Ref file: {args.refs} not found')
@@ -137,4 +143,4 @@ if __name__ == '__main__':
     tables = tables_dict(refs['model_path'])
     if views:
         gen_views(views, out['views'], templates['view'], not args.no_merge)
-    gen_tables(tables, views, out['model'] , templates, out['media'], not args.no_visual, not args.no_merge)
+    gen_tables(tables, views, out['model'] , templates, out['media'], not args.no_visual, not args.no_merge, args.dpi)

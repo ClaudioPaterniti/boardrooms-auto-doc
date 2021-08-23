@@ -2,7 +2,7 @@ import os
 import re
 import logging
 
-from code.table import Table
+#from code.TE_model_parser import Table
 
 _render_relations = False
 try:
@@ -51,7 +51,7 @@ def _measures_block(tree, measures, template, folder_template):
     return s
 
 
-def _relations_block(table, tables, template, media_path, render_relations):
+def _relations_block(table, tables, template, media_path, render_relations, dpi):
     if len(table.relations) == 0:
         return ''
     relations = table.relations.copy()
@@ -69,7 +69,7 @@ def _relations_block(table, tables, template, media_path, render_relations):
     if render_relations:
         try:
             logging.info(f'Rendering relations')
-            img, n = render.render_relations(relations, table.name, media_path)
+            img, n = render.render_relations(relations, table.name, media_path, dpi)
             link = f'/docs/.media/model/{img}'
             size = min(950, 100*n)
             return f'![Image Error]({link} ={size}x)'
@@ -82,13 +82,13 @@ def _relations_block(table, tables, template, media_path, render_relations):
     return '\n'.join(blocks)
 
 
-def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations = True):
+def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations, dpi):
     render_relations = _render_relations and visual_relations
     columns = _columns_block(table, templates['column'])
     measures = _measures_block(table.tree, measures_list, templates['measure'], templates['folder'])
     cols = {c.name for c in table.columns}
     calculated = _measures_block(table.calc_cols, cols, templates['measure'], templates['folder'])
-    relations = _relations_block(table, tables, templates['relation'], media_path, render_relations)
+    relations = _relations_block(table, tables, templates['relation'], media_path, render_relations, dpi)
     source = table.source
     if table.source != 'Manual':
         key = (table.source.schema.lower(), table.source.table.lower())

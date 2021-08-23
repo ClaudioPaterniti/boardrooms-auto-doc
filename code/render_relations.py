@@ -41,10 +41,10 @@ def _proc_relations(relations):
         })
     return tables, edges
 
-def render_relations(relations, name, path):
+def render_relations(relations, name, path, dpi):
     filename = re.sub(r'\W', '', name)
     g = gv.Digraph(name=name, filename=filename, directory=path)
-    g.attr('graph',  pad="0", nodesep="0.5", ranksep="0.4", dpi="1080")
+    g.attr('graph',  pad="0", nodesep="0.5", ranksep="0.4", dpi=str(dpi))
     g.attr('node', shape="plaintext", fontsize="8")
     tables, edges = _proc_relations(relations)
     for t, c in tables.items():
