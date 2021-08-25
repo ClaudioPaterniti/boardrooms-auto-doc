@@ -9,7 +9,7 @@ def _sources_block(view, views_dict):
             key = (source.lower(), name.lower())
             if  key in views_dict:
                 name = views_dict[key].name.table
-                block += f'- [{name}](./{name}.md)\n'
+                block += f'- [{name}](./{views_dict[key].page_name})\n'
             else:
                  block += f'- {name}\n'
     return block

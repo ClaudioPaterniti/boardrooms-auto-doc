@@ -14,6 +14,21 @@ import code.table_page as tp
 _section_pat = re.compile(r'(#+.+?$)((?:[^#]|(?:\\#))*)', flags=re.MULTILINE | re.DOTALL)
 _file_pat = re.compile(r'(?P<name>.+)(?P<ext>\.[^\.]*$)')
 
+def _escape_name(name):
+    encoding = {
+        ':': '%3A',
+        '<': '%3C',
+        '>': '%3E',
+        '*': '%2A',
+        '?': '%3F',
+        '|': '%7C',
+        '-': '%2D',
+        '"': '%22'
+    }
+    for c in encoding:
+        name = name.replace(c, encoding[c])
+    return name.replace(' ', '-')
+
 def views_dict(path, ext):
     views = {}
     for file in os.listdir(path):
@@ -21,7 +36,7 @@ def views_dict(path, ext):
         if  re.fullmatch(ext, file_name['ext']) is not None:
             logging.info(f'Parsing view: {file}')
             with open(os.path.join(path,file), 'r') as f:
-                v = View(f.read(), file_name['name'])
+                v = View(f.read(), file_name['name'], _escape_name(file_name['name'])+'.md')
                 views[(v.name.schema.lower(), v.name.table.lower())] = v
     return views
 
@@ -62,7 +77,8 @@ def merge_page(old, new):
 
 def gen_views(views, out_path, template, merge):
     for view in sorted(views):
-        filename = re.sub(r'\W', '', views[view].name.table)+'.md'
+        #filename = re.sub(r'\W', '', views[view].name.table)+'.md'
+        filename = views[view].page_name
         logging.info(f'Generating view page {filename}')
         page = vp.create_view_page(views[view], views, template)
         out_file = os.path.join(out_path, filename)
@@ -80,7 +96,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge, dp
     for _, t in tables.items():
         measures.update({m.name for m in t.measures})
     for table in sorted(tables):
-        filename = re.sub(r'\W', '', tables[table].name)+'.md'
+        filename = _escape_name(tables[table].name)+'.md'
         logging.info(f'Generating table page {filename}')
         page = tp.create_table_page(tables[table], tables, measures, views, templates, media_path, visual, dpi)
         out_file = os.path.join(out_path, filename)
@@ -103,7 +119,7 @@ if __name__ == '__main__':
                         help='indicate what serializer procued the model, options: te or sloth')
     parser.add_argument('--no-visual', action='store_true',
                         help='disable visual rendering of relations')
-    parser.add_argument('-dpi', type= int, default=1080,
+    parser.add_argument('-dpi', type= int, default=720,
                         help= 'set relation images resolution')
     parser.add_argument('--no-merge', action ='store_true',
                         help='disable documentation pages merging, it overwrites current pages')

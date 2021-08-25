@@ -10,7 +10,8 @@ class View:
     _source_pat = re.compile(r'\s(\w+dltdb|default)\.(\w+)\s')
     _notebook_name_pat = re.compile(r'\d*\.\s*(?P<name>\S.*)')
 
-    def __init__(self, query, filename):
+    def __init__(self, query, filename, page_name):
+        self.page_name = page_name
         self.filename = filename
         note_name = self._notebook_name_pat.search(filename)
         self.notebook = filename if note_name is None else note_name['name']
