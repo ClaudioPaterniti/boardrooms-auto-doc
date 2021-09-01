@@ -129,7 +129,7 @@ class Table:
                 body = json.load(fp)
                 m = Table_item(body, Table_item.Type.MEASURE, self.name)
                 self.measures.append(m)
-                if 'displayFolder' in body:
+                if 'displayFolder' in body and body['displayFolder'] != '':
                     self.tree.add(m, body['displayFolder'].split('\\'))
                 else:
                     self.tree.add(m, [])
