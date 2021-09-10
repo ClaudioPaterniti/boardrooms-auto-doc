@@ -10,24 +10,11 @@ from code.view import View
 import code.view_page as vp
 from code.TE_model_parser import Table
 import code.table_page as tp
+from code.utils import escape_filename, decode_special_chars, encode_special_chars
 
-_section_pat = re.compile(r'(#+.+?$)((?:[^#]|(?:\\#))*)', flags=re.MULTILINE | re.DOTALL)
+_section_pat = re.compile(r'(^\s*#+.+?$)((?:[^#])*)', flags=re.MULTILINE | re.DOTALL)
+_code_block = re.compile(r'(```.*?```)', flags=re.MULTILINE | re.DOTALL)
 _file_pat = re.compile(r'(?P<name>.+)(?P<ext>\.[^\.]*$)')
-
-def _escape_name(name):
-    encoding = {
-        ':': '%3A',
-        '<': '%3C',
-        '>': '%3E',
-        '*': '%2A',
-        '?': '%3F',
-        '|': '%7C',
-        '-': '%2D',
-        '"': '%22'
-    }
-    for c in encoding:
-        name = name.replace(c, encoding[c])
-    return name.replace(' ', '-')
 
 def views_dict(path, ext):
     views = {}
@@ -36,7 +23,7 @@ def views_dict(path, ext):
         if  re.fullmatch(ext, file_name['ext']) is not None:
             logging.info(f'Parsing view: {file}')
             with open(os.path.join(path,file), 'r') as f:
-                v = View(f.read(), file_name['name'], _escape_name(file_name['name'])+'.md')
+                v = View(f.read(), file_name['name'], escape_filename(file_name['name'])+'.md')
                 views[(v.name.schema.lower(), v.name.table.lower())] = v
     return views
 
@@ -53,26 +40,38 @@ def tables_dict(path, include_hidden = False):
             logging.error(f'Parsing failed: {e}')
     return tables
 
+def escape_code_blocks(page):
+    blocks = _code_block.split(page)
+    for i in range(1,len(blocks),2):
+        blocks[i] = encode_special_chars(blocks[i])
+    return ''.join(blocks)
+
 def get_sections_tree(page):
     sections = _section_pat.findall(page)
     parents = ['']*6
-    tree = []
+    tree = []; toc = ''
     for name, content in sections:
         level = name.count('#')
         parents[level-1] = name
-        tree.append(('/'.join(parents[:level]), name+content))
-    return tree
+        full_path = '/'.join(parents[:level])
+        if '[[_TOC_]]' in content:
+            toc = full_path
+        tree.append((full_path, name+content))
+    return tree, toc
 
 def merge_page(old, new):
-    old_tree = get_sections_tree(old)
-    new_tree = dict(get_sections_tree(new))
+    old_tree, old_toc = get_sections_tree(escape_code_blocks(old))
+    new_chaps, new_toc = get_sections_tree(new)
+    new_tree = dict(new_chaps)
+    if old_toc != new_toc:
+        new_tree[new_toc] = new_tree[new_toc].replace('[[_TOC_]]', '')
     page = []
     for section, content in old_tree:
         if section in new_tree:
             page.append(new_tree[section])
         else:
             page.append(content)
-    return ''.join(page)
+    return decode_special_chars(''.join(page))
 
 
 def gen_views(views, out_path, template, merge):
@@ -96,7 +95,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge, dp
     for _, t in tables.items():
         measures.update({m.name for m in t.measures})
     for table in sorted(tables):
-        filename = _escape_name(tables[table].name)+'.md'
+        filename = escape_filename(tables[table].name)+'.md'
         logging.info(f'Generating table page {filename}')
         page = tp.create_table_page(tables[table], tables, measures, views, templates, media_path, visual, dpi)
         out_file = os.path.join(out_path, filename)

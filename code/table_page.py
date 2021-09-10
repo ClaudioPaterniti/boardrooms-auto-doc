@@ -3,6 +3,7 @@ import re
 import logging
 
 #from code.TE_model_parser import Table
+from code.utils import escape, encode_special_chars
 
 _render_relations = False
 try:
@@ -39,10 +40,10 @@ def _measures_block(tree, measures, template, folder_template):
         deps = {d for d in deps if d in measures}
         deps = ', '.join(sorted(deps))
         rd = {
-            'name': m.name,
-            'format': m.format,
-            'code': m.dax,
-            'deps': deps
+            'name': escape(m.name),
+            'format': escape(m.format),
+            'code': encode_special_chars(m.dax),
+            'deps': escape(deps)
         }
         blocks.append(template.substitute(rd))
     s = '\n'.join(blocks)
@@ -101,11 +102,11 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
                 logging.warning(f'Source view {table.source} for table {table.name} not found')
             source = table.source.table
     replace_dict = {
-        'name': table.name,
-        'source': source,
-        'columns': columns,
+        'name': escape(table.name),
+        'source': escape(source),
+        'columns': escape(columns),
         'calculated': calculated,
         'measures': measures,
-        'relations': relations
+        'relations': escape(relations)
     }
     return templates['table'].substitute(replace_dict)
