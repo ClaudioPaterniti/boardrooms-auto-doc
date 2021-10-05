@@ -1,4 +1,4 @@
-The documentation is populated by parsing the views' notebooks and the pbix serialization generated with Tabular Editor.
+The documentation is populated by parsing the views' notebooks and the pbix serialization generated with Tabular Editor or with [PbixSerializer](https://github.com/ClaudioPaterniti/PbixSerializer) (in this case the option '-s sloth' should be used).
 
 Copy default_refs.json into a new per-project file, for example project_name.json, and set the corresponding paths.
 Launch with:
