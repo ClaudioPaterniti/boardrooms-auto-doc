@@ -1,4 +1,5 @@
 import os
+import traceback
 import argparse
 import json
 import re
@@ -37,7 +38,8 @@ def tables_dict(path, include_hidden = False):
             if include_hidden or not t.hidden:
                 tables[t.name] = t
         except Exception as e:
-            logging.error(f'Parsing failed: {e}')
+            logging.error(f'Parsing failed:\n')
+            traceback.print_exc()
     return tables
 
 def escape_code_blocks(page):

@@ -10,4 +10,7 @@ $code
 ```
 
 **Dependencies**: $deps
+
+
+**Description**: $desc
 </details>

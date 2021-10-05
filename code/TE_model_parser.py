@@ -48,6 +48,7 @@ class Table_item:
     def __init__(self, item, item_type, table):
         self.table = table
         self.name = item['name']
+        self.desc = item.get('description')
         self.type = item_type
         self.dax = _proc_expression(item.get('expression'))
         self.data_type = item.get('dataType')
@@ -70,6 +71,7 @@ class Table:
         table_json = self._get_table_json(path)
         self.hidden = table_json.get("isHidden") or table_json.get("isPrivate")
         self.name = table_json['name']
+        self.desc = table_json.get('description')
         part_json, partition = self._check_partitions(path)
         source_json = part_json if partition else table_json
         self.source = self._proc_source(source_json, partition)

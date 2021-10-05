@@ -41,6 +41,7 @@ def _measures_block(tree, measures, template, folder_template):
         deps = ', '.join(sorted(deps))
         rd = {
             'name': escape(m.name),
+            'desc': escape(m.desc),
             'format': escape(m.format),
             'code': encode_special_chars(m.dax),
             'deps': escape(deps)
@@ -85,6 +86,7 @@ def _relations_block(table, tables, template, media_path, render_relations, dpi)
 
 def create_table_page(table, tables, measures_list, views, templates, media_path, visual_relations, dpi):
     render_relations = _render_relations and visual_relations
+    desc = f'## Description\n{escape(table.desc)}' if table.desc else ''
     columns = _columns_block(table, templates['column'])
     measures = _measures_block(table.tree, measures_list, templates['measure'], templates['folder'])
     cols = {c.name for c in table.columns}
@@ -103,6 +105,7 @@ def create_table_page(table, tables, measures_list, views, templates, media_path
             source = table.source.table
     replace_dict = {
         'name': escape(table.name),
+        'desc': desc,
         'source': escape(source),
         'columns': escape(columns),
         'calculated': calculated,
