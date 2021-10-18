@@ -73,7 +73,7 @@ def merge_page(old, new):
             page.append(new_tree[section])
         else:
             page.append(content)
-    return decode_special_chars(''.join(page))
+    return ''.join(page)
 
 
 def gen_views(views, out_path, template, merge):
@@ -89,7 +89,7 @@ def gen_views(views, out_path, template, merge):
                 old = fp.read()
             page = merge_page(old, page)
         with open(out_file, 'w') as fo:
-            fo.write(page)
+            fo.write(decode_special_chars(page))
 
 
 def gen_tables(tables, views, out_path, templates, media_path, visual, merge, dpi):
@@ -107,7 +107,7 @@ def gen_tables(tables, views, out_path, templates, media_path, visual, merge, dp
                 old = fp.read()
             page = merge_page(old, page)
         with open(out_file, 'w') as fo:
-            fo.write(page)
+            fo.write(decode_special_chars(page))
 
 
 if __name__ == '__main__':
